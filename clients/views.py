@@ -3,11 +3,11 @@ from .models import Client
 from .serializers import ClientSerializer
 
 
-class ClientList(generics.ListAPIView):
+class ClientListCreate(generics.ListCreateAPIView):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
 
-class ClientCreate(generics.CreateAPIView):
+class ClientAccess(generics.RetrieveUpdateDestroyAPIView):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
