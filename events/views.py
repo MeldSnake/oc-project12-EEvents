@@ -1,5 +1,7 @@
-from rest_framework import permissions, generics
+from rest_framework import generics, permissions
+
 from .models import Event
+from .permissions import IsEventContact
 from .serializers import EventSerializer
 
 
@@ -18,4 +20,11 @@ class EventAccess(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [
         permissions.DjangoModelPermissions,
     ]
-    # TODO Can anyone access from id or shall only assigned contacts be allowed
+
+    def get_permissions(self):
+        permission_classes = [
+            permissions.DjangoModelPermissions,
+        ]
+        if self.request.method in ["PUT", "PATCH"]:
+            permission_classes.append(IsEventContact)
+        return permission_classes

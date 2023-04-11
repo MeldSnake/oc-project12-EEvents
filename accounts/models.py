@@ -30,6 +30,8 @@ def unassign_user_role_group(user: User, role: UserRoleChoices):
             group = Group.objects.get(name="support")
         case UserRoleChoices.MANAGEMENT:
             group = Group.objects.get(name="management")
+        case _:
+            group = None
     user.groups.remove(group)
 
 
@@ -41,6 +43,8 @@ def assign_user_role_group(user: User, *, role: UserRoleChoices | None = None):
             group = Group.objects.get(name="support")
         case UserRoleChoices.MANAGEMENT:
             group = Group.objects.get(name="management")
+        case _:
+            group = None
     user.groups.add(group)
 
 
