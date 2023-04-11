@@ -51,7 +51,7 @@ class Event(models.Model):
     )
     contract = models.OneToOneField(
         "contracts.Contract",
-        verbose_name=_("Event"),
+        verbose_name=_("Contract"),
         on_delete=models.CASCADE,
         blank=False,
         null=False,
