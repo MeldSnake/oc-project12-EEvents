@@ -17,14 +17,11 @@ class EventListCreate(generics.ListCreateAPIView):
 class EventAccess(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes = [
-        permissions.DjangoModelPermissions,
-    ]
 
     def get_permissions(self):
         permission_classes = [
-            permissions.DjangoModelPermissions,
+            permissions.DjangoModelPermissions(),
         ]
         if self.request.method in ["PUT", "PATCH"]:
-            permission_classes.append(IsEventContact)
+            permission_classes.append(IsEventContact())
         return permission_classes

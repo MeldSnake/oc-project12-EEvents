@@ -19,8 +19,8 @@ class ContractAccess(generics.RetrieveUpdateDestroyAPIView):
 
     def get_permissions(self):
         permission_classes = [
-            permissions.DjangoModelPermissions,
+            permissions.DjangoModelPermissions(),
         ]
         if self.request.method in ["PUT", "PATCH"]:
-            permission_classes.append(IsSalesContactOrManagement)
+            permission_classes.append(IsSalesContactOrManagement())
         return permission_classes

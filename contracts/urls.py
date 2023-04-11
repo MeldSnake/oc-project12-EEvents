@@ -6,5 +6,5 @@ from .views import (
 
 urlpatterns = [
     path("", view=ContractListCreate.as_view(), name="contract_list"),
-    path("<int:pk>", view=ContractAccess.as_view(), name="contract_detail"),
+    path("<int:pk>/", view=ContractAccess.as_view(), name="contract_detail"),
 ]
