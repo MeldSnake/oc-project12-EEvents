@@ -122,5 +122,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_user_groups, reverse_user_groups),
+        # During initial migration the permissions are not yet created.
+        # This thus becomes useless.
+        # migrations.RunPython(create_user_groups, reverse_user_groups),
     ]

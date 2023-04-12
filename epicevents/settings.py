@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'phonenumber_field',
     'accounts',
     'clients',
@@ -139,9 +140,82 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
 }
 
 # Phonenumber
 
 PHONENUMBER_DEFAULT_REGION = "FR"
+
+# LOGGING
+
+LOGS_PATH = BASE_DIR / "logs"
+
+LOGS_PATH.mkdir(exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / "logs" / "log.log",
+        },
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / "logs" / "error.log",
+        },
+        'accounts_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / "logs" / 'accounts.log',
+        },
+        'clients_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / "logs" / 'clients.log',
+        },
+        'contracts_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / "logs" / 'contract.log',
+        },
+        'events_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / "logs" / 'events.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'error_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'accounts': {
+            'handlers': ['accounts_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'clients': {
+            'handlers': ['clients_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'contracts': {
+            'handlers': ['contracts_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'events': {
+            'handlers': ['events_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

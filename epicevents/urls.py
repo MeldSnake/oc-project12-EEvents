@@ -14,11 +14,134 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.contrib.auth.models import Group, Permission
+from django.urls import include, path
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+from accounts.models import User, UserRoleChoices
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('clients/', include('clients.urls')),
-    path('contracts/', include('contracts.urls')),
-    path('events/', include('events.urls')),
+    path("admin/", admin.site.urls),
+    path("clients/", include("clients.urls")),
+    path("contracts/", include("contracts.urls")),
+    path("events/", include("events.urls")),
+    path(
+        "token/",
+        view=TokenObtainPairView.as_view(),
+        name="token_obtain_pair",
+    ),
+    path(
+        "token/refresh/",
+        view=TokenRefreshView.as_view(),
+        name="token_refresh",
+    ),
 ]
+
+
+def create_user_groups():
+    """Ensure that the default groups are present"""
+    try:
+        # obtaining all permissions per model
+        client_perms = Permission.objects.filter(
+            content_type__app_label="clients",
+            content_type__model="client",
+        )
+        contract_perms = Permission.objects.filter(
+            content_type__app_label="contracts",
+            content_type__model="contract",
+        )
+        event_perms = Permission.objects.filter(
+            content_type__app_label="events",
+            content_type__model="event",
+        )
+
+        # Creating or Obtaining the group management
+        (
+            management_group,
+            created,
+        ) = Group.objects.get_or_create(name="management")
+        if created:
+            # If newly created assign the required permissions to the group
+            for permission in [*client_perms, *contract_perms, *event_perms]:
+                management_group.permissions.add(permission)
+
+        # Creating or Obtaining the group sales
+        (
+            sales_group,
+            created,
+        ) = Group.objects.get_or_create(name="sales")
+        if created:
+            # If newly created assign the required permissions to the group
+            permissions = [
+                *client_perms.filter(
+                    codename__in=[
+                        "add_client",
+                        "view_client",
+                        "change_client",
+                    ],
+                ),
+                *contract_perms.filter(
+                    codename__in=[
+                        "add_contract",
+                        "view_contract",
+                        "change_contract",
+                    ],
+                ),
+                *event_perms.filter(
+                    codename__in=[
+                        "add_event",
+                        "view_event",
+                        "change_event",
+                    ],
+                ),
+            ]
+            for permission in permissions:
+                sales_group.permissions.add(permission)
+
+        # Creating or Obtaining the group support
+        (
+            support_group,
+            created,
+        ) = Group.objects.get_or_create(name="support")
+        if created:
+            # If newly created assign the required permissions to the group
+            permissions = [
+                *client_perms.filter(
+                    codename__in=[
+                        "view_client",
+                    ],
+                ),
+                *contract_perms.filter(
+                    codename__in=[
+                        "view_contract",
+                    ],
+                ),
+                *event_perms.filter(
+                    codename__in=[
+                        "view_event",
+                        "change_event",
+                    ],
+                ),
+            ]
+            for permission in permissions:
+                support_group.permissions.add(permission)
+
+        for user in User.objects.all():
+            if user.role == UserRoleChoices.SALES:
+                user.groups.add(sales_group)
+            elif user.role == UserRoleChoices.SUPPORT:
+                user.groups.add(support_group)
+            elif user.role == UserRoleChoices.MANAGEMENT:
+                user.groups.add(management_group)
+            # elif user.role == UserRoleChoices.ADMIN:
+            #     user.groups
+    except Exception:  # Else this would throw right before migrations start
+        pass
+
+
+# Weird way to create groups after the migrations, would not work in migrations
+# since the permissions are created after all migrations are executed.
+create_user_groups()
