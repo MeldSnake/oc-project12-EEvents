@@ -1,5 +1,7 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions
 
+from .filters import EventFilterSet
 from .models import Event
 from .permissions import IsEventContact
 from .serializers import EventSerializer
@@ -11,6 +13,11 @@ class EventListCreate(generics.ListCreateAPIView):
     permissions = [
         permissions.DjangoModelPermissions,
     ]
+    filter_backends = [
+        DjangoFilterBackend,
+    ]
+    filterset_class = EventFilterSet
+
     # TODO Add paging system for list
 
 

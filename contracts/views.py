@@ -1,7 +1,10 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions
+
+from .filters import ContractFilterSet
 from .models import Contract
-from .serializers import ContractSerializer
 from .permissions import IsSalesContactOrManagement
+from .serializers import ContractSerializer
 
 
 class ContractListCreate(generics.ListCreateAPIView):
@@ -10,6 +13,11 @@ class ContractListCreate(generics.ListCreateAPIView):
     permission_classes = [
         permissions.DjangoModelPermissions,
     ]
+    filter_backends = [
+        DjangoFilterBackend,
+    ]
+    filterset_class = ContractFilterSet
+
     # TODO Add paging system for list
 
 

@@ -1,7 +1,10 @@
-from rest_framework import generics, permissions
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, generics, permissions
+
+from .filters import ClientFilterSet
 from .models import Client
-from .serializers import ClientSerializer
 from .permissions import IsSalesContactOrManagement
+from .serializers import ClientSerializer
 
 
 class ClientListCreate(generics.ListCreateAPIView):
@@ -10,6 +13,17 @@ class ClientListCreate(generics.ListCreateAPIView):
     permission_classes = [
         permissions.DjangoModelPermissions,
     ]
+    filter_backends = [
+        filters.SearchFilter,
+        DjangoFilterBackend,
+    ]
+    search_fields = [
+        "first_name",
+        "last_name",
+        "company_name",
+    ]
+    filterset_class = ClientFilterSet
+
     # TODO Add paging system
 
 

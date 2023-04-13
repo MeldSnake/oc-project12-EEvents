@@ -2,3 +2,4 @@ django
 djangorestframework
 django-phonenumber-field[phonenumbers]
 djangorestframework-simplejwt
+django-filter
