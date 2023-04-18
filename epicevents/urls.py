@@ -25,6 +25,7 @@ from accounts.models import User, UserRoleChoices
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("users/", include("accounts.urls")),
     path("clients/", include("clients.urls")),
     path("contracts/", include("contracts.urls")),
     path("events/", include("events.urls")),
@@ -45,6 +46,10 @@ def create_user_groups():
     """Ensure that the default groups are present"""
     try:
         # obtaining all permissions per model
+        user_perms = Permission.objects.filter(
+            content_type__app_label="accounts",
+            content_type__model="user",
+        )
         client_perms = Permission.objects.filter(
             content_type__app_label="clients",
             content_type__model="client",
@@ -63,71 +68,74 @@ def create_user_groups():
             management_group,
             created,
         ) = Group.objects.get_or_create(name="management")
-        if created:
-            # If newly created assign the required permissions to the group
-            for permission in [*client_perms, *contract_perms, *event_perms]:
-                management_group.permissions.add(permission)
+        for permission in [*user_perms, *client_perms, *contract_perms, *event_perms]:
+            management_group.permissions.add(permission)
 
         # Creating or Obtaining the group sales
         (
             sales_group,
             created,
         ) = Group.objects.get_or_create(name="sales")
-        if created:
-            # If newly created assign the required permissions to the group
-            permissions = [
-                *client_perms.filter(
-                    codename__in=[
-                        "add_client",
-                        "view_client",
-                        "change_client",
-                    ],
-                ),
-                *contract_perms.filter(
-                    codename__in=[
-                        "add_contract",
-                        "view_contract",
-                        "change_contract",
-                    ],
-                ),
-                *event_perms.filter(
-                    codename__in=[
-                        "add_event",
-                        "view_event",
-                        "change_event",
-                    ],
-                ),
-            ]
-            for permission in permissions:
-                sales_group.permissions.add(permission)
+        permissions = [
+            *user_perms.filter(
+                codename__in=[
+                    "view_user",
+                ],
+            ),
+            *client_perms.filter(
+                codename__in=[
+                    "add_client",
+                    "view_client",
+                    "change_client",
+                ],
+            ),
+            *contract_perms.filter(
+                codename__in=[
+                    "add_contract",
+                    "view_contract",
+                    "change_contract",
+                ],
+            ),
+            *event_perms.filter(
+                codename__in=[
+                    "add_event",
+                    "view_event",
+                ],
+            ),
+        ]
+        for permission in permissions:
+            sales_group.permissions.add(permission)
 
         # Creating or Obtaining the group support
         (
             support_group,
             created,
         ) = Group.objects.get_or_create(name="support")
-        if created:
-            # If newly created assign the required permissions to the group
-            permissions = [
-                *client_perms.filter(
+        permissions = [
+            *client_perms.filter(
+                *user_perms.filter(
                     codename__in=[
-                        "view_client",
+                        "view_user",
                     ],
                 ),
-                *contract_perms.filter(
-                    codename__in=[
-                        "view_contract",
-                    ],
-                ),
-                *event_perms.filter(
-                    codename__in=[
-                        "view_event",
-                        "change_event",
-                    ],
-                ),
-            ]
-            for permission in permissions:
-                support_group.permissions.add(permission)
+                codename__in=[
+                    "view_client",
+                ],
+            ),
+            *contract_perms.filter(
+                codename__in=[
+                    "view_contract",
+                ],
+            ),
+            *event_perms.filter(
+                codename__in=[
+                    "view_event",
+                    "change_event",
+                ],
+            ),
+        ]
+        for permission in permissions:
+            support_group.permissions.add(permission)
 
         for user in User.objects.all():
             if user.role == UserRoleChoices.SALES:
