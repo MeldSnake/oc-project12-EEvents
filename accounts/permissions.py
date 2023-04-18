@@ -8,7 +8,7 @@ class IsSalesGroup(permissions.BasePermission):
             request.user
             and (
                 request.user.is_staff
-                or request.user.group == UserRoleChoices.SALES[0]
+                or request.user.role == UserRoleChoices.SALES
             )
         )
 
@@ -19,7 +19,7 @@ class IsSupportGroup(permissions.BasePermission):
             request.user
             and (
                 request.user.is_staff
-                or request.user.group == UserRoleChoices.SUPPORT[0]
+                or request.user.role == UserRoleChoices.SUPPORT
             )
         )
 
@@ -30,6 +30,6 @@ class IsManagementGroup(permissions.BasePermission):
             request.user
             and (
                 request.user.is_staff
-                or request.user.group == UserRoleChoices.MANAGEMENT[0]
+                or request.user.role == UserRoleChoices.MANAGEMENT
             )
         )
