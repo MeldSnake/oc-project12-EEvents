@@ -4,3 +4,4 @@ django-phonenumber-field[phonenumbers]
 djangorestframework-simplejwt
 django-filter
 sentry-sdk
+psycopg2
