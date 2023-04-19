@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 from datetime import timedelta
 from pathlib import Path
 from django.utils.translation import gettext_lazy as _
@@ -158,70 +159,20 @@ PHONENUMBER_DEFAULT_REGION = "FR"
 
 # LOGGING
 
-LOGS_PATH = BASE_DIR / "logs"
+sentry_sdk.init(
+    dsn="https://19316828fd8c44f494a1a22bef82b0f4@o4505042635325440.ingest.sentry.io/4505042636570624",
+    integrations=[
+        DjangoIntegration(),
+    ],
 
-LOGS_PATH.mkdir(exist_ok=True)
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0,
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / "logs" / "log.log",
-        },
-        'error_file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / "logs" / "error.log",
-        },
-        'accounts_file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / "logs" / 'accounts.log',
-        },
-        'clients_file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / "logs" / 'clients.log',
-        },
-        'contracts_file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / "logs" / 'contract.log',
-        },
-        'events_file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / "logs" / 'events.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file', 'error_file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'accounts': {
-            'handlers': ['accounts_file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'clients': {
-            'handlers': ['clients_file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'contracts': {
-            'handlers': ['contracts_file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'events': {
-            'handlers': ['events_file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    },
-}
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True,
+
+    environment="Debug",
+)
