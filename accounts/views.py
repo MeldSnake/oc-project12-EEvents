@@ -1,17 +1,23 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, exceptions
+from django.utils.translation import gettext_lazy as _
 
 from .models import User, UserRoleChoices
 from .serializers import UserSerializer
 from .permissions import IsManagementGroup
 
 
-# MAYBE The management team shall be able to create users
-# TODO Management shall not be able to create with a Management Role
-
-
 class UserListCreate(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        if self.request.user.role != UserRoleChoices.ADMIN:
+            role = serializer.validated_data.get('role')
+            if role in [UserRoleChoices.ADMIN, UserRoleChoices.MANAGEMENT]:
+                raise exceptions.PermissionDenied(
+                    _("Only an administrator can create a user with this role")
+                )
+        return super().perform_create(serializer)
 
     def get_permissions(self):
         permission_classes = [
