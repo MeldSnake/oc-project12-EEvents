@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from django.utils.translation import gettext_lazy as _
 from rest_framework import permissions
 
 from accounts.models import UserRoleChoices
@@ -12,6 +13,8 @@ if TYPE_CHECKING:
 
 
 class IsSalesContactOrManagement(permissions.BasePermission):
+    message = _("You are neither a member of the Sales or Management team")
+
     def has_object_permission(
         self,
         request: "HttpRequest",

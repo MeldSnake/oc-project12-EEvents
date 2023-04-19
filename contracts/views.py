@@ -18,7 +18,11 @@ class ContractListCreate(generics.ListCreateAPIView):
     ]
     filterset_class = ContractFilterSet
 
-    # TODO Add paging system for list
+    def get_permissions(self):
+        permission_classes = super().get_permissions()
+        if self.request.method == "POST":
+            permission_classes.append(IsSalesContactOrManagement())
+        return permission_classes
 
 
 class ContractAccess(generics.RetrieveUpdateDestroyAPIView):
