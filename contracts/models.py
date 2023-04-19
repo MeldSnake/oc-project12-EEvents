@@ -1,6 +1,10 @@
+from typing import Type
 from django.db import models
 from django.urls import reverse
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+from clients.models import Client
 
 
 class Contract(models.Model):
@@ -32,3 +36,23 @@ class Contract(models.Model):
 
     def get_absolute_url(self):
         return reverse("contract_detail", kwargs={"pk": self.pk})
+
+
+@receiver(post_save, sender=Contract)
+def update_client_status_on_contract(
+    sender: Type[Contract],
+    instance: Contract,
+    created: bool,
+    raw: bool,
+    using: str,
+    update_fields: list[str] | None,
+    **kwargs,
+):
+    if raw or instance is None:
+        return
+    update_fields = update_fields or []
+    client: Client = instance.client
+    if "status" in update_fields or (created and instance.client):
+        if not client.status:
+            client.status = True
+            client.save()
