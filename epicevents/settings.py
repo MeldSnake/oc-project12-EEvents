@@ -13,7 +13,6 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from datetime import timedelta
 from pathlib import Path
-from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -155,6 +154,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'epicevents.pagination.PaginationClass',
+    'PAGE_SIZE': 5,
 }
 
 # Phonenumber

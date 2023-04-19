@@ -6,8 +6,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-
-# TODO Handle the user role change, this shall update the clients/events contacts
+# MAYBE Handle the user role change, this shall update the clients/events contacts
 
 
 class LocalUserManager(UserManager):
@@ -33,6 +32,7 @@ class User(AbstractUser):
 
 
 def unassign_user_role_group(user: User, role: UserRoleChoices):
+    group: Group | None
     match role:
         case UserRoleChoices.SALES:
             group = Group.objects.get(name="sales")
@@ -47,6 +47,7 @@ def unassign_user_role_group(user: User, role: UserRoleChoices):
 
 
 def assign_user_role_group(user: User, *, role: UserRoleChoices | None = None):
+    group: Group | None
     match (role or user.role):
         case UserRoleChoices.SALES:
             group = Group.objects.get(name="sales")

@@ -24,8 +24,6 @@ class ClientListCreate(generics.ListCreateAPIView):
     ]
     filterset_class = ClientFilterSet
 
-    # TODO Add paging system
-
 
 class ClientAccess(generics.RetrieveUpdateDestroyAPIView):
     queryset = Client.objects.all()

@@ -11,6 +11,7 @@ def contract_clients(request):
 
 class ContractFilterSet(filters.FilterSet):
     paid = filters.BooleanFilter(method="is_contract_paid_filter")
+    # MAYBE client filter (by name/mail/company?)
     client = filters.ModelChoiceFilter(queryset=contract_clients)
     payment_date = CustomDateFilter(field_name="payment_due")
     payment = filters.DateFromToRangeFilter(field_name="payment_due")

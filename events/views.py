@@ -18,8 +18,6 @@ class EventListCreate(generics.ListCreateAPIView):
     ]
     filterset_class = EventFilterSet
 
-    # TODO Add paging system for list
-
 
 class EventAccess(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()

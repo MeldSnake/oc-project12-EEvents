@@ -4,6 +4,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 from accounts.validators import validate_sales_user
 
 
+# MAYBE Handle the user role change, this shall update the clients contacts
+# This can be done through receiver post_save
+
+
 class Client(models.Model):
     first_name = models.CharField(
         _("First Name"),

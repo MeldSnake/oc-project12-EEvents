@@ -5,9 +5,8 @@ from .serializers import UserSerializer
 from .permissions import IsManagementGroup
 
 
-# TODO The management team shall be able to create users
-# (not up to management team since this would be a security issue)
-# Admin can create any kind of account though
+# MAYBE The management team shall be able to create users
+# TODO Management shall not be able to create with a Management Role
 
 
 class UserListCreate(generics.ListCreateAPIView):
@@ -33,8 +32,6 @@ class UserListCreate(generics.ListCreateAPIView):
                 role=UserRoleChoices.ADMIN,
             )
         )
-
-    # TODO Add paging system for list
 
 
 class UserAccess(generics.RetrieveUpdateDestroyAPIView):
