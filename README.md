@@ -32,5 +32,9 @@ Pour démarrer le serveur, utilisez la commande suivante :
 > python manage.py runserver
 ```
 
+###PostgreSQL
+Le projet utilise une base de donnees PostgreSQL par default.
+Les informations de connexion sont disponible dans le fichier [settings.py](epicevents/settings.py#L87), ligne 87+.
+
 ##Documentation
 Une documentation Postman a été générée et peut être consultée à l’adresse suivante: [documentation](https://documenter.getpostman.com/view/26149355/2s93Y2ShSG).

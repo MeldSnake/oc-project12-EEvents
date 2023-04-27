@@ -23,6 +23,12 @@ from rest_framework_simplejwt.views import (
 
 from accounts.models import User, UserRoleChoices
 
+
+def exception_view(request):
+    """Exception route to test sentry connexion"""
+    dzero = 1 / 0
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("users/", include("accounts.urls")),
@@ -39,6 +45,7 @@ urlpatterns = [
         view=TokenRefreshView.as_view(),
         name="token_refresh",
     ),
+    # path("sentry_test/", exception_view),
 ]
 
 

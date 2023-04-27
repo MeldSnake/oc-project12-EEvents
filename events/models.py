@@ -25,7 +25,7 @@ class Event(models.Model):
     event_status = models.CharField(
         _("Event status"),
         choices=EventStatusChoices.choices,
-        default=EventStatusChoices.FINANCED[0],
+        default=EventStatusChoices.FINANCED,
         max_length=15,
     )
     attendees = models.IntegerField(_("Attendees"))
