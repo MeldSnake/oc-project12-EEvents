@@ -120,13 +120,13 @@ def create_user_groups():
         ) = Group.objects.get_or_create(name="support")
         permissions = [
             *client_perms.filter(
-                *user_perms.filter(
-                    codename__in=[
-                        "view_user",
-                    ],
-                ),
                 codename__in=[
                     "view_client",
+                ],
+            ),
+            *user_perms.filter(
+                codename__in=[
+                    "view_user",
                 ],
             ),
             *contract_perms.filter(
