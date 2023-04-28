@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import formats
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from accounts.validators import validate_support_user
@@ -20,6 +21,9 @@ class EventStatus(models.Model):
     class Meta:
         verbose_name = _("event status")
         verbose_name_plural = _("event statuses")
+
+    def __str__(self):
+        return self.name.capitalize()
 
 
 class Event(models.Model):
@@ -72,6 +76,9 @@ class Event(models.Model):
     class Meta:
         verbose_name = _("event")
         verbose_name_plural = _("events")
+
+    def __str__(self):
+        return f"{str(self.contract.client)} -> {formats.date_format(self.event_date, 'SHORT_DATE_FORMAT')}"
 
     def get_absolute_url(self):
         return reverse("event_detail", kwargs={"pk": self.pk})

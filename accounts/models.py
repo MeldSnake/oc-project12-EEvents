@@ -30,6 +30,9 @@ class User(AbstractUser):
         max_length=10,
     )
 
+    def __str__(self) -> str:
+        return super().__str__() + f" -> {self.role}"
+
 
 def unassign_user_role_group(user: User, role: UserRoleChoices):
     group: Group | None
