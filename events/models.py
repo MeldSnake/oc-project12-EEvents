@@ -11,6 +11,17 @@ class EventStatusChoices(models.TextChoices):
     COMPLETED = "completed", _("Completed")
 
 
+class EventStatus(models.Model):
+    name = models.CharField(
+        _("Status name"),
+        unique=True,
+    )
+
+    class Meta:
+        verbose_name = _("event status")
+        verbose_name_plural = _("event statuses")
+
+
 class Event(models.Model):
 
     date_creation = models.DateTimeField(
@@ -22,11 +33,10 @@ class Event(models.Model):
         _("Date last updated"),
         auto_now=True,
     )
-    event_status = models.CharField(
-        _("Event status"),
-        choices=EventStatusChoices.choices,
-        default=EventStatusChoices.FINANCED,
-        max_length=15,
+    event_status = models.ForeignKey(
+        EventStatus,
+        models.SET_NULL,
+        null=True,
     )
     attendees = models.IntegerField(_("Attendees"))
     event_date = models.DateField(
