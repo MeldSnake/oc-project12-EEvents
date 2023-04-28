@@ -1,6 +1,5 @@
 from typing import Type
 from django.db import models
-from django.urls import reverse
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _

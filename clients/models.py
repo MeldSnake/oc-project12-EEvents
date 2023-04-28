@@ -1,4 +1,7 @@
+from typing import Type
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
 from django.utils.translation import gettext as _
 from phonenumber_field.modelfields import PhoneNumberField
 from accounts.validators import validate_sales_user
@@ -55,12 +58,10 @@ class Client(models.Model):
         "accounts.User",
         verbose_name=_("Sales contact"),
         on_delete=models.SET_NULL,
-        validators=[validate_sales_user],
         null=True,
         related_name="clients",
         limit_choices_to=models.Q(
             role__in=[
-                UserRoleChoices.MANAGEMENT,
                 UserRoleChoices.SALES,
             ],
         ),
@@ -80,3 +81,16 @@ class Client(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} @ {self.company_name}"
+
+
+@receiver(pre_save, sender=Client)
+def client_pre_save_receiver(
+    sender: Type[Client],
+    instance: Client,
+    raw: bool,
+    using: str,
+    update_fields: list[str] | None,
+    **kwargs,
+):
+    if instance.sales_contact is not None:
+        validate_sales_user(instance.sales_contact)

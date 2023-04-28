@@ -1,7 +1,9 @@
+from typing import Type
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
 from django.utils import formats
 from django.utils.translation import gettext_lazy as _
-from django.urls import reverse
 from accounts.validators import validate_support_user
 from accounts.models import UserRoleChoices
 
@@ -28,7 +30,6 @@ class EventStatus(models.Model):
 
 
 class Event(models.Model):
-
     date_creation = models.DateTimeField(
         _("Date creation"),
         auto_now=False,
@@ -59,13 +60,11 @@ class Event(models.Model):
         "accounts.User",
         verbose_name=_("Support contact"),
         on_delete=models.SET_NULL,
-        validators=[validate_support_user],
         null=True,
         blank=True,
         related_name="events",
         limit_choices_to=models.Q(
             role__in=[
-                UserRoleChoices.MANAGEMENT,
                 UserRoleChoices.SUPPORT,
             ],
         ),
@@ -89,3 +88,16 @@ class Event(models.Model):
 
     def __str__(self):
         return f"{str(self.contract.client)} -> {formats.date_format(self.event_date, 'SHORT_DATE_FORMAT')}"
+
+
+@receiver(pre_save, sender=Event)
+def event_pre_save_receiver(
+    sender: Type[Event],
+    instance: Event,
+    raw: bool,
+    using: str,
+    update_fields: list[str] | None,
+    **kwargs,
+):
+    if instance.support_contact is not None:
+        validate_support_user(instance.support_contact)
