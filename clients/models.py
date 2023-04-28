@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 from phonenumber_field.modelfields import PhoneNumberField
 from accounts.validators import validate_sales_user
+from accounts.models import UserRoleChoices
 
 
 # MAYBE Handle the user role change, this shall update the clients contacts
@@ -57,6 +58,12 @@ class Client(models.Model):
         validators=[validate_sales_user],
         null=True,
         related_name="clients",
+        limit_choices_to=models.Q(
+            role__in=[
+                UserRoleChoices.MANAGEMENT,
+                UserRoleChoices.SALES,
+            ],
+        ),
     )
 
     # facebook = models.CharField(_("Facebook"), max_length=50)

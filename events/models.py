@@ -3,6 +3,7 @@ from django.utils import formats
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from accounts.validators import validate_support_user
+from accounts.models import UserRoleChoices
 
 
 class EventStatusChoices(models.TextChoices):
@@ -62,6 +63,12 @@ class Event(models.Model):
         null=True,
         blank=True,
         related_name="events",
+        limit_choices_to=models.Q(
+            role__in=[
+                UserRoleChoices.MANAGEMENT,
+                UserRoleChoices.SUPPORT,
+            ],
+        ),
     )
     contract = models.OneToOneField(
         "contracts.Contract",
@@ -71,6 +78,9 @@ class Event(models.Model):
         null=False,
         default=None,
         related_name="event",
+        limit_choices_to=models.Q(
+            event=None,
+        ),
     )
 
     class Meta:
@@ -79,6 +89,3 @@ class Event(models.Model):
 
     def __str__(self):
         return f"{str(self.contract.client)} -> {formats.date_format(self.event_date, 'SHORT_DATE_FORMAT')}"
-
-    def get_absolute_url(self):
-        return reverse("event_detail", kwargs={"pk": self.pk})

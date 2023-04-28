@@ -37,9 +37,6 @@ class Contract(models.Model):
     def __str__(self):
         return f"{str(self.client)} - Contract {self.pk}"
 
-    def get_absolute_url(self):
-        return reverse("contract_detail", kwargs={"pk": self.pk})
-
 
 @receiver(post_save, sender=Contract)
 def update_client_status_on_contract(
