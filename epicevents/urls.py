@@ -26,7 +26,7 @@ from accounts.models import User, UserRoleChoices
 
 def exception_view(request):
     """Exception route to test sentry connexion"""
-    dzero = 1 / 0
+    _ = 1 / 0
 
 
 urlpatterns = [
@@ -75,7 +75,12 @@ def create_user_groups():
             management_group,
             created,
         ) = Group.objects.get_or_create(name="management")
-        for permission in [*user_perms, *client_perms, *contract_perms, *event_perms]:
+        for permission in (
+            *user_perms,
+            *client_perms,
+            *contract_perms,
+            *event_perms,
+        ):
             management_group.permissions.add(permission)
 
         # Creating or Obtaining the group sales

@@ -87,7 +87,11 @@ class Event(models.Model):
         verbose_name_plural = _("events")
 
     def __str__(self):
-        return f"{str(self.contract.client)} -> {formats.date_format(self.event_date, 'SHORT_DATE_FORMAT')}"
+        return " ".join(
+            str(self.contract.client),
+            "->",
+            formats.date_format(self.event_date, 'SHORT_DATE_FORMAT')
+        )
 
 
 @receiver(pre_save, sender=Event)

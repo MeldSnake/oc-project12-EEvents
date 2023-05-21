@@ -6,7 +6,8 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-# MAYBE Handle the user role change, this shall update the clients/events contacts
+# MAYBE Handle the user role change,
+# this shall update the clients/events contacts
 
 
 class LocalUserManager(UserManager):
