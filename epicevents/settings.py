@@ -181,7 +181,7 @@ PHONENUMBER_DEFAULT_REGION = "FR"
 
 sentry_sdk.init(
     dsn=(
-        "https://19316828fd8c44f494a1a22bef82b0f4@o4505042635325440.ingest"
+        "https://19316828fd8c44f494a1a22bef82b0f4@o4505042635325440.ingest."
         "sentry.io/4505042636570624"
     ),
     integrations=[

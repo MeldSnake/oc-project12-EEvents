@@ -1,11 +1,9 @@
-from typing import Type
 from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import pre_save
 from django.utils import formats
 from django.utils.translation import gettext_lazy as _
 from accounts.validators import validate_support_user
 from accounts.models import UserRoleChoices
+from .validators import validate_signed_contract
 
 
 class EventStatusChoices(models.TextChoices):
@@ -63,6 +61,7 @@ class Event(models.Model):
         null=True,
         blank=True,
         related_name="events",
+        validators=[validate_support_user],
         limit_choices_to=models.Q(
             role__in=[
                 UserRoleChoices.SUPPORT,
@@ -77,8 +76,9 @@ class Event(models.Model):
         null=False,
         default=None,
         related_name="event",
+        validators=[validate_signed_contract],
         limit_choices_to=models.Q(
-            event=None,
+            signed=True,
         ),
     )
 
@@ -87,21 +87,8 @@ class Event(models.Model):
         verbose_name_plural = _("events")
 
     def __str__(self):
-        return " ".join(
+        return " ".join((
             str(self.contract.client),
             "->",
             formats.date_format(self.event_date, 'SHORT_DATE_FORMAT')
-        )
-
-
-@receiver(pre_save, sender=Event)
-def event_pre_save_receiver(
-    sender: Type[Event],
-    instance: Event,
-    raw: bool,
-    using: str,
-    update_fields: list[str] | None,
-    **kwargs,
-):
-    if instance.support_contact is not None:
-        validate_support_user(instance.support_contact)
+        ))

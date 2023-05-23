@@ -16,6 +16,10 @@ class Contract(models.Model):
         _("Date last updated"),
         auto_now=True,
     )
+    signed = models.BooleanField(
+        _("Signed"),
+        default=False,
+    )
     amount = models.FloatField(_("Price"))
     payment_due = models.DateTimeField(
         _("Payment due"),
@@ -34,7 +38,10 @@ class Contract(models.Model):
         verbose_name_plural = _("contracts")
 
     def __str__(self):
-        return f"{str(self.client)} - Contract {self.pk}"
+        return (
+            f"{str(self.client)} - Contract {self.pk} "
+            f"({'' if self.signed else 'non-'}signed)"
+        )
 
 
 @receiver(post_save, sender=Contract)
